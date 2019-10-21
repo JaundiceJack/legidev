@@ -1,0 +1,23 @@
+{
+  "name": "legidev",
+  "version": "1.0.0",
+  "description": "website",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JaundiceJack/legidev.git"
+  },
+  "author": "James Mcneilan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JaundiceJack/legidev/issues"
+  },
+  "homepage": "https://github.com/JaundiceJack/legidev#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
