@@ -20,5 +20,5 @@ app.use('/dinodata', dinodata);
 // Start the app on port 80
 const port = 8080;
 app.listen(port, () => {
-	console.log("Express started on port:"+port.toString());
+	console.log("Express started on port:"+port);
 })
