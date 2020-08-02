@@ -1,0 +1,186 @@
+/* Page Setup */
+* {
+  margin: 0;
+  padding: 0;
+}
+html, body, main {
+  background: #020406;
+  width: 100%;
+  height: 100vh;
+}
+nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+
+/* Shapes & Designs */
+.hub {
+  position: absolute;
+}
+.orb {
+  position: relative;
+  border-radius: 50%;
+  text-align: center;
+  transition: all 0.4s;
+  overflow: hidden;
+}
+.littleOrb {
+  width: 100px;
+  height: 100px;
+  border: double 8px #111;
+  box-shadow: inset 0px 0px 10px 2px;
+  z-index: 0;
+}
+.bigOrb {
+  width: 250px;
+  height: 250px;
+  border: solid 2px #125;
+  box-shadow: 0px 0px 50px 4px #123;
+  z-index: 1;
+}
+.background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: solid 2px #46c;
+
+
+}
+.background img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+
+  filter: hue-rotate(90deg);
+
+}
+.swap {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+.swap1 {position: absolute;}
+.swap1 * {
+  opacity: 100%;
+  transition: opacity 0.4s;
+}
+.swap2 {position: absolute;}
+.swap2 * {
+  opacity: 0%;
+  transition: opacity 0.4s;
+}
+/* orb link colors */
+.github {background: radial-gradient(#6f42c1, #212529);}
+.trello {background: radial-gradient(#007bff, #212529);}
+.linkedin {background: radial-gradient(#dc3545, #212529);}
+.flickr {background: radial-gradient(#fd7e14, #212529);}
+.reptile {background: radial-gradient(#20c997, #212529);}
+.alamy {background: radial-gradient(#abc, #222);}
+
+
+/* Text Styling */
+.link {
+  text-decoration: none;
+  color: #111;
+}
+.linkText {
+  margin-top: 15px;
+  font-size: 24px;
+}
+.linkIcon {}
+.text {
+  text-shadow: -1px 0   1px  #000, /* left */
+               0    1px  1px  #000, /* bottom */
+               1px  0   1px  #000, /* right */
+               0    -1px 1px  #000; /* top */
+}
+.mainFont { font-family: 'Cinzel'; }
+.secondaryFont { font-family: 'Teko' }
+.title {
+  font-size: 30px;
+  color: #4f3;
+  pointer-events: none;
+}
+.logo {
+  font-size: 30px;
+  color: #4f3;
+  margin-bottom: 5px;
+}
+.intro {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4f3;
+  pointer-events: none;
+}
+
+
+/* Interaction */
+.littleOrb:hover {
+  transform: scale(1.2);
+  border: double 4px #333;
+}
+.bigOrb:hover {
+  transform: scale(1.05);
+  border: solid 2px #8Fa;
+}
+.bigOrb:hover .background img {
+  filter: hue-rotate(90deg) blur(5px);
+}
+.link:hover {
+  text-decoration: none;
+  color: #111;
+}
+.swap:hover .swap1 * {
+  opacity: 0%;
+}
+.swap:hover .swap2 * {
+  opacity: 100%;
+}
+.github:hover {background: radial-gradient(#8f62e1, #212529);}
+.trello:hover {background: radial-gradient(#209bff, #212529);}
+.linkedin:hover {background: radial-gradient(#fc5565, #212529);}
+.flickr:hover {background: radial-gradient(#fd9e34, #212529);}
+.reptile:hover {background: radial-gradient(#40e9b7, #212529);}
+
+
+/* Animations */
+.move1 {animation: out1 0.9s cubic-bezier(0.1, 0.6, 0.8, 1.15) 0.2s 1 forwards;}
+.move2 {animation: out2 0.9s cubic-bezier(0.1, 0.6, 0.8, 1.15) 0.2s 1 forwards;}
+.move3 {animation: out3 0.9s cubic-bezier(0.1, 0.6, 0.8, 1.15) 0.2s 1 forwards;}
+.move4 {animation: out4 0.9s cubic-bezier(0.1, 0.6, 0.8, 1.15) 0.2s 1 forwards;}
+.move5 {animation: out5 0.9s cubic-bezier(0.1, 0.6, 0.8, 1.15) 0.2s 1 forwards;}
+.move6 {animation: out6 0.9s cubic-bezier(0.1, 0.6, 0.8, 1.15) 0.2s 1 forwards;}
+/* spiral the hubs outward */
+@keyframes out1 {
+  0% { transform: rotate(0deg) translate(0px)}
+  100% { transform: rotate(360deg) translate(0, -200px)}
+}
+@keyframes out2 {
+  0% { transform: rotate(0deg) translate(0px)}
+  100% { transform: rotate(360deg) translate(167px, -108px)}
+}
+@keyframes out3 {
+  0% { transform: rotate(0deg) translate(0px)}
+  100% { transform: rotate(360deg) translate(167px, 108px)}
+}
+@keyframes out4 {
+  0% { transform: rotate(0deg) translate(0px)}
+  100% { transform: rotate(360deg) translate(0px, 200px)}
+}
+@keyframes out5 {
+  0% { transform: rotate(0deg) translate(0px)}
+  100% { transform: rotate(360deg) translate(-167px, 108px)}
+}
+@keyframes out6 {
+  0% { transform: rotate(0deg) translate(0px)}
+  100% { transform: rotate(360deg) translate(-167px, -108px)}
+}
