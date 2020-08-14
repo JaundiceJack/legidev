@@ -1,0 +1,71 @@
+extends dinodata
+
+block content
+  div#select
+    i.fa.fa-chevron-left.fa-2x.ml-3
+    div.reptile     
+      img(src="https://images.unsplash.com/photo-1511824469431-95023c4a9f29?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1355&q=80").reptileImg
+      p.reptileName Jormun
+    div.reptile.selectedReptile     
+      img(src="https://images.unsplash.com/photo-1561740855-e9559767addc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80").reptileImg
+      p.reptileName Pebble
+    i.fa.fa-chevron-right.fa-2x.ml-auto.mr-3
+  div#content
+    // Reading Input Area
+    div.monitorCage
+      div.block.shady
+        h1.blockHeader Record
+        div.blockHR
+        div.blockContent               
+          form(method="post" action="/submit_readings").container
+            p.blockText Select a reptile above and enter their enclosure conditions. The entries will be plotted in the charts below.
+            div.row
+              div.col-md-4.col-sm-12                    
+                div.input-group.m-1
+                  div.input-group-prepend
+                    span.input-group-text.justify-content-end Date:
+                  input(type="date" min="2020-01-01").form-control
+              div.col-4
+              div.col-4
+            hr.blockHR
+            div.row
+              div.col-md-4.col-sm-12
+                span.badge.badge-secondary.m-1.p-2.w-100 Environment
+                div.input-group.m-1
+                  div.input-group-prepend
+                    span.input-group-text.justify-content-center.width-40
+                     i.fab.fa-gripfire
+                  input(type="text" placeholder="Warmest Point (F°)").form-control
+                div.input-group.m-1
+                  div.input-group-prepend
+                    span.input-group-text.justify-content-center.width-40
+                      i.far.fa-snowflake
+                  input(type="text" placeholder="Coldest Point (F°)").form-control
+                div.input-group.m-1.mb-3
+                  div.input-group-prepend
+                    span.input-group-text.justify-content-center.width-40
+                      i.fas.fa-cloud
+                  input(type="text" placeholder="Humidity (%)").form-control
+              div.col-md-4.col-sm-12
+                span.badge.badge-secondary.m-1.p-2.w-100 Hygiene Score
+                div.btn-group-vertical.w-100
+                  label.btn.btn-light.ml-1.mt-1.mb-0.pl-4.d-flex.justify-content-between Spotless
+                    input(type="radio" name="hygiene" value="4").ml-4.mr-2
+                  label.btn.btn-light.ml-1.mb-0.pl-4.d-flex.justify-content-between Not Bad
+                    input(type="radio" name="hygiene" value="3").ml-4.mr-2
+                  label.btn.btn-light.ml-1.mb-0.pl-4.d-flex.justify-content-between Messy
+                    input(type="radio" name="hygiene" value="2").ml-4.mr-2
+                  label.btn.btn-light.ml-1.mb-0.pl-4.d-flex.justify-content-between Getting Bad    
+                    input(type="radio" name="hygiene" value="1").ml-4.mr-2
+                  label.btn.btn-light.ml-1.mb-3.pl-4.d-flex.justify-content-between Disgusting
+                    input(type="radio" name="hygiene" value="0").ml-4.mr-2
+              div.col-md-4.col-sm-12            
+                button.btn.btn-success.w-100.m-1 
+                  p.m-0.d-inline Chart It
+                  i.fas.fa-arrow-down.ml-2
+      // Graph Area
+      div.block.mt-4.shady
+          h1.blockHeader Monitor
+          div.blockHR
+          div.blockContent
+            div.chart
