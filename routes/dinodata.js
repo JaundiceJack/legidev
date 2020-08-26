@@ -37,26 +37,6 @@ router.use( (req, res, next) => {
 	next();
 });
 
-// Express Validator Middleware
-/* depreciated
-router.use(expressValidator({
-	errorFormatter: (param, msg, value) => {
-		let namespace = param.split('.');
-		let root = namespace.shift();
-		let formParam = root;
-
-		while(namespace.length) {
-			formParam += '['+namespace.shift()+']';
-		}
-		return {
-			param: formParam,
-			msg: msg,
-			value: value
-		}
-	}
-}));
-*/
-
 // Passport Configuration
 require('../config/passport')(passport);
 // Passport Middleware
@@ -72,12 +52,6 @@ router.get('*', (req, res, next) => {
 // Handle a GET request for the home page
 router.get('/', (req, res) => {
 	res.render('ddindex', {});
-});
-
-
-
-router.get('/login', (req, res) => {
-	res.render('ddlogin', {});
 });
 
 // Route to the cage page(s)

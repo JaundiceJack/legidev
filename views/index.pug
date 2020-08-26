@@ -12,64 +12,114 @@ html(lang="en-US").bg-dark
     link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Righteous")
     link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Teko")
     link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel") 
+    link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cantarell:wght@700&display=swap") 
     meta(name="viewport" content="width=device-width, initial-scale=1" charset="utf-8")
     
   body
-    nav
-      div.hub
-        div.orb.bigOrb
-          div.background
-            img(src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9")
-          div.swap
-            div.swap1
-              h1.title.text.mainFont Legibly
-              div.d-flex.flex-row.justify-content-center
-                i.logo.text.fas.fa-chevron-left
-                i.logo.text.fas.fa-eye
-                i.logo.text.fas.fa-chevron-right
-              h1.title.text.mainFont Developed 
-            div.swap2
-              h2.title.text.mainFont Hello!
-              p.intro.text.mainFont Welcome to LegiDev, <br>personal site of James McNeilan. I've collected my interests and hobbies here.
-      div.hub.move1
-        div.orb.littleOrb.github
-          a.swap.link(href="#")
-            div.swap1
-              i.linkIcon.fab.fa-github.fa-5x
-            div.swap2        
-              p.linkText.secondaryFont GitHub
-      div.hub.move2
-        div.orb.littleOrb.trello
-          a.swap.link(href="#")
-            div.swap1
-              i.linkIcon.fab.fa-trello.fa-4x
-            div.swap2
-              p.linkText.secondaryFont Trello
-      div.hub.move3
-        div.orb.littleOrb.linkedin
-          a.swap.link(href="#")
-            div.swap1
-              i.linkIcon.fab.fa-linkedin.fa-4x
-            div.swap2
-              p.linkText.secondaryFont LinkedIn
-      div.hub.move4
-        div.orb.littleOrb.flickr
-          a.swap.link(href="#")
-            div.swap1
-              i.linkIcon.far.fa-images.fa-3x
-            div.swap2
-              p.linkText.secondaryFont Flickr
-      div.hub.move5
-        div.orb.littleOrb.reptile
-          a.swap.link(href="/dinodata")
-            div.swap1
-              i.linkIcon.fas.fa-dragon.fa-3x
-            div.swap2
-              p.linkText.secondaryFont Dino-Data
-      div.hub.move6
-        div.orb.littleOrb.alamy
-          a.swap.link(href="#")
-            div.swap1
-              i.linkIcon.fas.fa-camera-retro.fa-3x
-            div.swap2
-              p.linkText.secondaryFont Alamy
+  .canvas
+    .center
+      .swap
+        .swap1.fade6
+          h1.title.shadyText.secondaryFont Legibly       
+          h1.title.shadyText.secondaryFont Developed
+          div.d-flex.flex-row.justify-content-center
+            i.logo.shadyText.fas.fa-chevron-left
+            i.logo.shadyText.fas.fa-eye
+            i.logo.shadyText.fas.fa-chevron-right
+        .swap2
+          h2.innerTitle.shadyText.secondaryFont Hello!
+          p.intro.shadyText.secondaryFont Welcome to LegiDev, personal site of James McNeilan. I've collected my projects and hobbies here.
+    .blobs
+      .centerBlob.white 
+      .blob.money.violet
+      .blob.coding.indigo
+      .blob.social.blue
+      .blob.ideas.cyan
+      .blob.music.green
+      .blob.watch.yellow
+      .blob.learn.orange
+      .blob.galleries.red
+    .hub.money
+      .hubContent
+        a.swap.link(href="#")
+          .swap1.fade1
+            i.linkIcon.fas.fa-camera-retro.fa-3x
+          .swap2
+            p.linkText.secondaryFont Alamy
+      .subHubs
+        .coinbase
+        .budget
+        .alamy
+    .hub.coding 
+      .hubContent
+        a.swap.link(href="#")
+          .swap1.fade2
+            i.linkIcon.fab.fa-github.fa-5x
+          .swap2        
+            p.linkText.secondaryFont GitHub
+      .subHubs
+        .github
+        .codepen
+        .dinodata
+    .hub.social
+      .hubContent
+        a.swap.link(href="#")
+          .swap1.fade3
+            i.linkIcon.fab.fa-linkedin.fa-4x
+          .swap2
+            p.linkText.secondaryFont LinkedIn
+      .subHubs
+        .linkedin
+        .vrchat
+        .protonmail
+    .hub.ideas
+      .hubContent
+        a.swap.link(href="/dinodata")
+          .swap1.fade4
+            i.linkIcon.fas.fa-dragon.fa-3x
+          .swap2
+            p.linkText.secondaryFont DinoData
+      .subHubs
+        .trello
+    .hub.music
+      .hubContent
+        a.swap.link(href="#")
+          .swap1.fade5
+            i.linkIcon.fab.fa-bitcoin.fa-4x
+          .swap2
+            p.linkText.secondaryFont Coinbase
+      .subHubs
+        .pandora
+    .hub.watch
+      .hubContent
+        a.swap.link(href="#")
+          .swap1.fade4
+            i.linkIcon.fab.fa-trello.fa-4x
+          .swap2
+            p.linkText.secondaryFont Trello
+      .subHubs
+        .torrentday
+        .youtube
+    .hub.learn
+      .hubContent
+        a.swap.link(href="#")
+          .swap1.fade3
+            i.linkIcon.fab.fa-leanpub.fa-4x
+          .swap2
+            p.linkText.secondaryFont DuoLingo
+      .subHubs
+        .udemy
+        .duolingo
+    .hub.galleries
+      .hubContent
+        a.swap.link(href="#")
+          .swap1.fade2
+            i.linkIcon.far.fa-images.fa-3x
+          .swap2
+            p.linkText.secondaryFont Flickr
+      .subHubs
+        .flickr
+        .blender
+        
+    
+  

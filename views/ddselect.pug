@@ -1,0 +1,10 @@
+div.d-flex.justify-content-center.align-items-center.mx-5.h-100
+  each reptile in page
+    if reptile._id === selected._id
+      a(id=reptile._id href="/dinodata/cage/"+selected._id).reptile.selected
+        img(src="https://images.unsplash.com/photo-1511824469431-95023c4a9f29?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1355&q=80").reptileImg
+        p.reptileName= reptile.name
+    else
+      a(id=reptile._id href="/dinodata/cage/"+reptile._id).reptile
+        img(src="https://images.unsplash.com/photo-1561740855-e9559767addc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80").reptileImg
+        p.reptileName= reptile.name

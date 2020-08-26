@@ -1,15 +1,24 @@
 extends dinodata
 
 block content
+  
   div#select
-    i.fa.fa-chevron-left.fa-2x.ml-3
-    div.reptile     
-      img(src="https://images.unsplash.com/photo-1511824469431-95023c4a9f29?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1355&q=80").reptileImg
-      p.reptileName Jormun
-    div.reptile.selectedReptile     
-      img(src="https://images.unsplash.com/photo-1561740855-e9559767addc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80").reptileImg
-      p.reptileName Pebble
-    i.fa.fa-chevron-right.fa-2x.ml-auto.mr-3
+    div.d-flex.flex-row.align-items-center
+      div.d-flex.flex-column.m-1
+        a(href="/dinodata/cage/create").btn.btn-sm.btn-primary.m-1 + Add
+        a(href="/dinodata/cage/edit/"+selected._id).btn.btn-sm.btn-secondary.m-1 Edit
+      div#carouselControl(data-ride="carousel" data-interval="false").carousel.slide 
+        div.carousel-inner
+          include ddcarousel.pug
+        a(href="#carouselControl" role="button" data-slide="prev").carousel-control-prev
+          span(aria-hidden="true").carousel-control-prev-icon
+          span.sr-only Previous
+        a(href="#carouselControl" role="button" data-slide="next").carousel-control-next
+          span(aria-hidden="true").carousel-control-next-icon
+          span.sr-only Next
+      
+    
+    
   div#content
     // Reading Input Area
     div.monitorCage

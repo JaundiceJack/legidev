@@ -1,11 +1,15 @@
 extends dinodata
 
 block content
-  div#select.d-none
+  // Display event messages
+  != messages('message', locals)
+  if errors
+    each error, i in errors
+      div.alert.alert-danger.m-4 #{error.msg}
   div#content
     div.intro.accountLogin
       h1.introHeader Log in:
-      form(method="post" action="/log_in").width-400
+      form(method="post" action="/dinodata/profile/login").width-400
         div.input-group.m-4.shady
           div.input-group-prepend
             span.input-group-text.width-100.justify-content-end Username:

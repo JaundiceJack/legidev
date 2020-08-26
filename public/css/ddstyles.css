@@ -59,8 +59,6 @@ body, main { min-height: 100vh; }
   background: linear-gradient(to bottom, #000, #070707);
   margin: 0px 20px;
   border-radius: 0 0 5px 5px;
-  display: flex;
-  align-items: center;
 }
 #content {
   margin: 20px;
@@ -205,16 +203,15 @@ body, main { min-height: 100vh; }
   background-color: lightblue;
   position: absolute;
   bottom: 0;
-  margin-bottom: -12px;
+
 }
-.selectedReptile::before {
+.selected::before {
   content: '';
   width: 75%;
   height: 3px;
   background-color: gold;
   position: absolute;
   bottom: 0;
-  margin-bottom: -12px;
 }
 .block {
   min-height: 200px;
