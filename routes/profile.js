@@ -11,7 +11,7 @@ const Reptile = require('../models/reptile');
 
 // User Creation Get Request
 router.get('/new_account', (req, res) => {
-	res.render('ddnewuser', {});
+	res.render('ddnewuser', { errors: req.session.errors });
 });
 
 // User Creation Post Request
@@ -25,6 +25,11 @@ router.post('/new_account',
     })
   ],
   (req, res, next) => {
+    // Check that the username is not taken
+    User.findOne({username: req.body.username}, (err, user) => {
+       if(err) { req.session.errors = err; res.redirect('/dinodata/profile/new_account') }
+       if(user) { res.redirect('/dinodata/profile/new_account') }
+     })
     const errors = validationResult(req);
     if (!errors.isEmpty()) { return res.status(400).json({ errors: errors.array() }); }
     // Create a new user if no errors were found
@@ -70,13 +75,13 @@ router.get('/login', (req, res) => {
 });
 
 // Login Post Request
-router.post('/login',
-	passport.authenticate('local', {
-		successRedirect: '/dinodata/cage',
-		failureRedirect: '/dinodata/profile/login',
-		failureFlash: false
-	})
-);
+router.post('/login', async (req, res, next) => {
+  passport.authenticate('local', {
+    successRedirect: '/dinodata/cage',
+    failureRedirect: '/dinodata/profile/login',
+    failureFlash: true
+  })(req, res, next);
+});
 
 // Logout Request
 router.get('/logout', (req, res) => {
