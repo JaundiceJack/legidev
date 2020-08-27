@@ -75,13 +75,13 @@ router.get('/login', (req, res) => {
 });
 
 // Login Post Request
-router.post('/login', async (req, res, next) => {
-  passport.authenticate('local', {
-    successRedirect: '/dinodata/cage',
-    failureRedirect: '/dinodata/profile/login',
-    failureFlash: true
-  })(req, res, next);
-});
+router.post('/login',
+  passport.authenticate('local' {
+		successRedirect: '/dinodata/cage',
+		failureRedirect: '/dinodata/profile/login',
+		failureFlash: true
+	})(req, res, next)
+);
 
 // Logout Request
 router.get('/logout', (req, res) => {
