@@ -69,6 +69,7 @@ router.post('/new_account',
 
 // Login Get Request
 router.get('/login', (req, res) => {
+  req.flash('success', "Yoe made iut hure");
 	res.render('ddlogin', {
 
 	})
@@ -76,11 +77,11 @@ router.get('/login', (req, res) => {
 
 // Login Post Request
 router.post('/login',
-  passport.authenticate('local' {
+  passport.authenticate('local', {
 		successRedirect: '/dinodata/cage',
 		failureRedirect: '/dinodata/profile/login',
 		failureFlash: true
-	})(req, res, next)
+	})
 );
 
 // Logout Request
