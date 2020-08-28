@@ -9,15 +9,9 @@ const Reptile = require('../models/reptile');
 // Bring in the reading model
 const Reading = require('../models/reading');
 
-
-
-
-
 // Reptile Creation Page Route
 router.get('/create', ensureAuthenticated, (req, res) => {
-	res.render('ddnewreptile', {
-		errors: req.session.errors
-	})
+	res.render('ddnewreptile', { errors: req.session.errors	});
 	req.session.errors = null;
 });
 // Reptile Creation Post Route
@@ -27,40 +21,36 @@ router.post('/create', ensureAuthenticated,
 		body('reptiname').notEmpty(),
     body('reptiname').isAlpha(),
 	],
- (req, res) => {
-	// Grab the entered info for a new reptile
-	const name = req.body.reptiname.toLowerCase().trim();
-	const type = req.body.reptitype;
-
-	// Check for input errors
-	const errors = validationResult(req);
-	if (!errors.isEmpty()) { return res.status(400).json({ errors: errors.array() }); }
-	else {
-		let newReptile = new Reptile({
-			owner_id: req.user._id,
-			name: name,
-			type: type
-		});
-		newReptile.save( (err) => {
-			if (err) {
-				console.log(err);
-				req.flash('Errors encountered while saving the new reptile...');
-				res.redirect('/dinodata/cage/create');
-				return;
-			}
-			else {
-				req.flash('success', capitalize(newReptile.name)+" successfully added.");
-				res.redirect('/dinodata/cage/'+newReptile._id);
-			}
-		});
-	};
-});
-
+ 	(req, res) => {
+		// Check for input errors
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) { return res.status(400).json({ errors: errors.array() }); }
+		else {
+			let newReptile = new Reptile({
+				owner_id: req.user._id,
+				name: req.body.reptiname.toLowerCase().trim(),
+				type: req.body.reptitype
+			});
+			newReptile.save( err => {
+				if (err) {
+					console.log(err);
+					req.flash('error', 'Errors encountered while saving the new reptile...');
+					res.redirect('/dinodata/cage/create');
+					return;
+				}
+				else {
+					req.flash('success', capitalize(newReptile.name)+" successfully added.");
+					res.redirect('/dinodata/cage/'+newReptile._id);
+				}
+			});
+		};
+	}
+);
+// Reptile editing routes
 router.get('/edit/:reptile_id', ensureAuthenticated, async (req, res) => {
 	const reptile = await Reptile.findById(req.params.reptile_id).exec();
-	res.render('ddedit', {
-		selected: reptile
-	})
+	res.render('ddedit', { selected: reptile, errors: req.session.errors });
+	req.session.errors = null;
 })
 router.post('/edit/:reptile_id', ensureAuthenticated,
 	[
@@ -81,7 +71,7 @@ router.post('/edit/:reptile_id', ensureAuthenticated,
 			Reptile.update(query, reptile, (err) => {
 				if (err) {
 					console.log(err);
-					req.flash('Errors encountered while updating the reptile...');
+					req.flash('error', 'Errors encountered while updating the reptile...');
 					res.redirect('/dinodata/cage/'+req.params.reptile_id);
 					return;
 				}
@@ -95,19 +85,16 @@ router.post('/edit/:reptile_id', ensureAuthenticated,
 )
 router.delete('/edit/:reptile_id', ensureAuthenticated, (req, res) => {
 	let query = {_id: req.params.reptile_id};
-	Reptile.remove(query, (err) => {
+	Reptile.remove(query, err => {
 		if (err) {
 			console.log(err);
-			req.flash('Errors encountered while deleting the reptile...');
+			req.flash('error', 'Errors encountered while deleting the reptile...');
 			res.sendStatus(500);
 			res.redirect('/dinodata/cage/'+req.params.reptile_id);
 			return;
 		}
-		else {
-
-			res.send('Success');
-		}
-	})
+		else { res.send('Success');	}
+	});
 })
 // Handle get requests to the cage page with no ID supplied
 router.get('/', ensureAuthenticated, async (req, res) => {
@@ -141,9 +128,7 @@ router.get('/:reptile_id', ensureAuthenticated, async (req, res) => {
 // Redirect the user to the reptile creation page
 function createRedir(req, res) {
 	req.flash('danger', "Please create a reptile.");
-	res.render('ddnewreptile', {
-		errors: req.session.errors
-	})
+	res.render('ddnewreptile', { errors: req.session.errors });
 	req.session.errors = null;
 }
 // Render the cage page for the reptile at the given index

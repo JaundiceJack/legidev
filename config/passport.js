@@ -12,18 +12,18 @@ module.exports = (passport) => {
       // Handle Errors
       if (err) {
         console.log(err);
-        return done(err, false, {messages: ['An error occurred with the supplied username.']});
+        return done(err, false, {message: 'An error occurred with the supplied username.'});
       }
       // Handle user not found
-      if (!user) return done(null, false, {messages: ['User not found.']});
+      if (!user) return done(null, false, {message: 'User not found.'});
       // Match Password
       bcrypt.compare(password, user.password, (err, isMatch) => {
         if (err) {
           console.log(err);
-          return done(err, false, {messages: ['An error occurred with the supplied password.']});
+          return done(err, false, {message: 'An error occurred with the supplied password.'});
         }
         if (isMatch) return done(null, user);
-        else return done(null, false, {messages: ['Incorrect password.']});
+        else return done(null, false, {message: 'Incorrect password.'});
       });
     });
   }));

@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const config = require('../config/database');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const flash = require('connect-flash');
 const expressValidator = require('express-validator');
 const passport = require('passport');
 
@@ -31,7 +30,7 @@ router.use(session({
 }));
 
 // Express Messages Middleware (in-window alerts)
-router.use(flash());
+router.use(require('connect-flash')());
 router.use( (req, res, next) => {
 	res.locals.messages = require('express-messages')(req, res);
 	next();

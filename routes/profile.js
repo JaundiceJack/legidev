@@ -69,7 +69,6 @@ router.post('/new_account',
 
 // Login Get Request
 router.get('/login', (req, res) => {
-  req.flash('success', "Yoe made iut hure");
 	res.render('ddlogin', {
 
 	})

@@ -2,6 +2,8 @@ extends dinodata
 
 block content
   div#content
+    // Display any server messages
+    != messages('message', locals)
     div
       div.block.shady
         h1.blockHeader Editing #{selected.name}
