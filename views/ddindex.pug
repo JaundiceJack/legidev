@@ -1,10 +1,9 @@
 extends dinodata
 
 block content
-  div#select.d-none
+  // Display any server messages
+  != messages('message', locals)
   div#content
-    // Display any server messages
-    != messages('message', locals)
     div.intro
       h1.introHeader A happy dinosaur...
       p.introText ...is a hungry dinosaur. Welcome to <b>Dino-Data.</b><br>Here you can monitor cage conditions,<br>schedule feedings, and research basic care<br>techniques for your reptile pets.

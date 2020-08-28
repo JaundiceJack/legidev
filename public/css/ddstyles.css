@@ -162,6 +162,12 @@ body, main { min-height: 100vh; }
 .width-150 { width: 150px; }
 .width-400 { width: 400px; }
 
+#carouselControl {
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .reptile {
   width: 60px;
   height: 60px;

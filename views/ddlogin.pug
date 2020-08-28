@@ -1,8 +1,8 @@
 extends dinodata
 
 block content  
+  != messages('message', locals)
   div#content    
-    != messages('message', locals)
     div.intro.accountLogin
       h1.introHeader Log in:
       form(method="post" action="/dinodata/profile/login").width-400

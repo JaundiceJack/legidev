@@ -1,8 +1,8 @@
 extends dinodata
 
 block content
+  != messages('message', locals)
   div#content
-    != messages('message', locals)
     div.intro.accountCreation
       h1.introHeader Create a new account
       form(method="post" action="/dinodata/profile/new_account").width-400
