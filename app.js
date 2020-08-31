@@ -18,7 +18,7 @@ let dinodata = require('./routes/dinodata');
 app.use('/dinodata', dinodata);
 
 // Start the app on port 80
-const port = 8080;
+const port = 80;
 app.listen(port, () => {
 	console.log("Express started on port:"+port);
 })
