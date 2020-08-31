@@ -162,15 +162,11 @@ body, main { min-height: 100vh; }
 .width-150 { width: 150px; }
 .width-400 { width: 400px; }
 
-#carouselControl {
-  height: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
+
 
 .reptile {
   width: 60px;
-  height: 60px;
+  height: 80px;
   margin: 0 25px;
   position: relative;
   display: flex;
@@ -211,7 +207,7 @@ body, main { min-height: 100vh; }
   bottom: 0;
 
 }
-.selected::before {
+.selected::after {
   content: '';
   width: 75%;
   height: 3px;
@@ -250,12 +246,9 @@ body, main { min-height: 100vh; }
 .blockContent {
   margin: 30px 20px;
 }
-.chart {
-  width: 90%;
-  height: 500px;
+.readings {
   background: white;
   border-radius: 5px;
-  margin: 0 auto;
 }
 
 .field {

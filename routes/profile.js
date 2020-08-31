@@ -9,6 +9,13 @@ const User = require('../models/user');
 // Bring in the reptile model
 const Reptile = require('../models/reptile');
 
+
+// Bookmarking
+router.get('*', (req, res, next) => {
+	res.locals.bookmark = "home";
+	next();
+})
+
 // User Creation Get Request
 router.get('/new_account', (req, res) => {
 	res.render('ddnewuser', { errors: req.session.errors });
@@ -69,9 +76,7 @@ router.post('/new_account',
 
 // Login Get Request
 router.get('/login', (req, res) => {
-	res.render('ddlogin', {
-
-	})
+	res.render('ddlogin', {	errors: req.session.errors })
 });
 
 // Login Post Request

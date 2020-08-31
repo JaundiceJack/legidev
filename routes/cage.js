@@ -6,8 +6,12 @@ const { body, validationResult } = require('express-validator');
 
 // Bring in the reptile model
 const Reptile = require('../models/reptile');
-// Bring in the reading model
-const Reading = require('../models/reading');
+
+// Bookmarking
+router.get('*', (req, res, next) => {
+	res.locals.bookmark = "cage";
+	next();
+})
 
 // Reptile Creation Page Route
 router.get('/create', ensureAuthenticated, (req, res) => {
@@ -41,6 +45,7 @@ router.post('/create', ensureAuthenticated,
 				else {
 					req.flash('success', capitalize(newReptile.name)+" successfully added.");
 					res.redirect('/dinodata/cage/'+newReptile._id);
+					return;
 				}
 			});
 		};
@@ -78,6 +83,7 @@ router.post('/edit/:reptile_id', ensureAuthenticated,
 				else {
 					req.flash('success', capitalize(reptile.name)+" successfully edited.");
 					res.redirect('/dinodata/cage/'+req.params.reptile_id);
+					return;
 				}
 			});
 		};
@@ -98,31 +104,18 @@ router.delete('/edit/:reptile_id', ensureAuthenticated, (req, res) => {
 })
 // Handle get requests to the cage page with no ID supplied
 router.get('/', ensureAuthenticated, async (req, res) => {
-	// Grab the user's reptiles from the DB
-	let reptile = await Reptile.findOne({owner_id: req.user._id}).exec();
-	// If none are found, ask them to create one
-	if(!reptile) { createRedir(req, res); }
-	// Otherwise, render the page with the first reptile in the list
-	else { res.redirect('/dinodata/cage/'+reptile._id) }
-})
-// Handle get requests to the cage page with an ID
-router.get('/:reptile_id', ensureAuthenticated, async (req, res) => {
-	// Grab the user's reptiles from the DB
-	const reptiles = await Reptile.find({owner_id: req.user._id}).exec();
-	// If none are found, ask them to create one
+	let reptiles = await Reptile.find({owner_id: req.user._id}).exec();
+	// If no reptile was found, create one, otherwise go to the reptile's page
 	if(!reptiles) { createRedir(req, res); }
-	// Otherwise, find the reptile by ID and render the page
-	else {
-		reptiles.forEach( (reptile, i) => {
-			if (reptile._id.toString() === req.params.reptile_id) {
-				cageRender(req, res, reptiles, i);
-				return;
-			}
-			if (i===reptiles.length-1) {cageRender(req,res, reptiles, i); return;}
-		})
-	}
+	else { cageRender(req,res, reptiles, 0); }
 })
-
+// Get a user's reptile and render the cage page
+router.get('/:reptile_id', ensureAuthenticated, async (req, res) => {
+	const reptiles = await Reptile.find({owner_id: req.user._id}).exec();
+	// If the user had no reptiles, create one, otherwise render their page
+	if (!reptiles) { createRedir(req, res); }
+	else { renderReptile(req, res, reptiles); }
+})
 
 
 // Redirect the user to the reptile creation page
@@ -130,6 +123,16 @@ function createRedir(req, res) {
 	req.flash('danger', "Please create a reptile.");
 	res.render('ddnewreptile', { errors: req.session.errors });
 	req.session.errors = null;
+}
+// Look through the reptiles for the requested one and render its page
+function renderReptile(req, res, reptiles) {
+	reptiles.forEach( (reptile, i) => {
+		if (reptile._id.toString() === req.params.reptile_id) {
+			cageRender(req, res, reptiles, i);
+		}
+	});
+	// If the reptile was not found, render the first
+ 	cageRender(req, res, reptiles, 0);
 }
 // Render the cage page for the reptile at the given index
 function cageRender(req, res, reptiles, index) {

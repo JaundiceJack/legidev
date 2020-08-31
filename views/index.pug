@@ -8,6 +8,7 @@ html(lang="en-US").bg-dark
     link(rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css")
     // Bring in Google Fonts
     link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cantarell:wght@700&display=swap") 
+    link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans&display=swap")
     meta(name="viewport" content="width=device-width, initial-scale=1" charset="utf-8")
     
   body
@@ -23,20 +24,20 @@ html(lang="en-US").bg-dark
             i.logo.shadyText.fas.fa-chevron-right
         .swap2
           h2.innerTitle.shadyText.secondaryFont Hello!
-          p.intro.shadyText.secondaryFont Welcome to LegiDev, personal site of James McNeilan. I've collected my projects and hobbies here.
+          p.intro.shadyText.secondaryFont Welcome to LegiDev,<br>personal site of<br>James McNeilan.<br>I've collected my<br>projects and hobbies<br>here.
     .blobs
       .centerBlob.white 
-      .blob.money.violet
-      .blob.coding.indigo
-      .blob.social.blue
-      .blob.ideas.cyan
-      .blob.music.green
-      .blob.watch.yellow
-      .blob.learn.orange
-      .blob.galleries.red
+      #moneyB.blob.money.violet
+      #codingB.blob.coding.indigo
+      #socialB.blob.social.blue
+      #ideasB.blob.ideas.cyan
+      #musicB.blob.music.green
+      #watchB.blob.watch.yellow
+      #learnB.blob.learn.orange
+      #galleryB.blob.gallery.red
     .hub.money
       .hubContent
-        a.swap.link(href="#")
+        a(href="#")#moneyS.swap.link
           .swap1.fade1
             i.linkIcon.fas.fa-camera-retro.fa-3x
           .swap2
@@ -47,7 +48,7 @@ html(lang="en-US").bg-dark
         .alamy
     .hub.coding 
       .hubContent
-        a.swap.link(href="#")
+        a(href="#")#codingS.swap.link
           .swap1.fade2
             i.linkIcon.fab.fa-github.fa-5x
           .swap2        
@@ -58,7 +59,7 @@ html(lang="en-US").bg-dark
         .dinodata
     .hub.social
       .hubContent
-        a.swap.link(href="#")
+        a(href="#")#socialS.swap.link
           .swap1.fade3
             i.linkIcon.fab.fa-linkedin.fa-4x
           .swap2
@@ -69,7 +70,7 @@ html(lang="en-US").bg-dark
         .protonmail
     .hub.ideas
       .hubContent
-        a.swap.link(href="/dinodata")
+        a(href="/dinodata")#ideasS.swap.link
           .swap1.fade4
             i.linkIcon.fas.fa-dragon.fa-3x
           .swap2
@@ -78,7 +79,7 @@ html(lang="en-US").bg-dark
         .trello
     .hub.music
       .hubContent
-        a.swap.link(href="#")
+        a(href="#")#musicS.swap.link
           .swap1.fade5
             i.linkIcon.fab.fa-bitcoin.fa-4x
           .swap2
@@ -87,7 +88,7 @@ html(lang="en-US").bg-dark
         .pandora
     .hub.watch
       .hubContent
-        a.swap.link(href="#")
+        a(href="#")#watchS.swap.link
           .swap1.fade4
             i.linkIcon.fab.fa-trello.fa-4x
           .swap2
@@ -97,7 +98,7 @@ html(lang="en-US").bg-dark
         .youtube
     .hub.learn
       .hubContent
-        a.swap.link(href="#")
+        a(href="#")#learnS.swap.link
           .swap1.fade3
             i.linkIcon.fab.fa-leanpub.fa-4x
           .swap2
@@ -105,9 +106,9 @@ html(lang="en-US").bg-dark
       .subHubs
         .udemy
         .duolingo
-    .hub.galleries
+    .hub.gallery
       .hubContent
-        a.swap.link(href="#")
+        a(href="#")#galleryS.swap.link
           .swap1.fade2
             i.linkIcon.far.fa-images.fa-3x
           .swap2
@@ -115,6 +116,7 @@ html(lang="en-US").bg-dark
       .subHubs
         .flickr
         .blender
-        
+  script(src="/javascript/main.js")      
+      
     
   

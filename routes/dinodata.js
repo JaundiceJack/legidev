@@ -29,6 +29,12 @@ router.use(session({
 	saveUninitialized: true
 }));
 
+// Passport Configuration
+require('../config/passport')(passport);
+// Passport Middleware
+router.use(passport.initialize());
+router.use(passport.session());
+
 // Express Messages Middleware (in-window alerts)
 router.use(require('connect-flash')());
 router.use( (req, res, next) => {
@@ -36,11 +42,7 @@ router.use( (req, res, next) => {
 	next();
 });
 
-// Passport Configuration
-require('../config/passport')(passport);
-// Passport Middleware
-router.use(passport.initialize());
-router.use(passport.session());
+
 
 // User Authentication Route
 router.get('*', (req, res, next) => {
@@ -48,18 +50,19 @@ router.get('*', (req, res, next) => {
 	next();
 })
 
-// Handle a GET request for the home page
-router.get('/', (req, res) => {
-	res.render('ddindex', {});
-});
 
 // Route to the cage page(s)
 const cage = require('./cage');
 router.use('/cage', cage);
+// Route to the readings handler
+const reading = require('./reading');
+router.use('/reading', reading);
 // Route to the profile page(s)
 const profile = require('./profile');
 router.use('/profile', profile);
-
+// Route to the home page(s)
+const home = require('./home');
+router.use('/', home);
 
 router.get('/donate', (req, res) => {
 	res.render('dddonate', {});
