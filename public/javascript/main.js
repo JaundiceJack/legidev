@@ -172,7 +172,7 @@ function emptySet(firstDate, lastDate) {
 /* ---------------- */
 /* Dataset Indexing */
 /* ---------------- */
-// Obtain a list of the indices where sundays are found in a list of dates
+// Return a list of the sunday positions in the dataset
 function getSundayIndices(dates) {
 	let sundayIndices = [];
 	for (let i = 0; i < dates.length; i++)
@@ -276,27 +276,58 @@ function monthSet(data, start) {
 /* ---------------- */
 /* Button functions */
 /* ---------------- */
-// Upon clicking the next button, cycle to the next 7 days/month to display
-function incrementTime() {
-	// Get the stored data or re-request it
-	let dataSet = retrieveLocalData();
-	// Check the timescale and increment accordingly
-	if (dataSet && dataSet.timeScale === 'week') incrementWeek(dataSet)
-	if (dataSet && dataSet.timeScale === 'month') incrementMonth(dataSet);
-}
-// Upon clicking the next button, cycle to the previous 7 days/month to display
-function decrementTime() {
+// Display the next or previous chronological data
+function go(direction) {
   // Get the stored data or re-request it
-	let dataset = retreiveLocalData();
-  // Check the timescale and decrement accordingly
-	if (dataset
-    && dataset.timeScale === 'week'
-    && dataset.currentIndex !== 0
-    && dataset.sundayIndices.length !== 0) decrementWeek(dataset);
-	if (dataset
-    && dataset.timeScale === 'month'
-    && dataset.currentIndex !== dataset.dates.length - 1
-    && dataset.sundayIndices.length !== 0) decrementMonth(dataset);
+	let dataset = retrieveLocalData();
+  if (dataset && dataset.timeScale === "week") weekCrement(dataset, direction);
+  else if (dataset && dataset.timeScale === "month") monthCrement(dataset, direction);
+  else window.alert("timeScale not set!");
+}
+// Go forwards or backwards a week and plot it
+function weekCrement(dataset, direction) {
+  const indexCopy = dataset.currentIndex;
+  if (direction === 'back')
+    dataset.currentIndex = decrementWeek(dataset); // Try shifting down by a week
+  else if (direction === 'forward'
+    && dataset.currentIndex !== dataset.dates.length - 1 // If not on the last day
+    && dataset.sundayIndices.length !== 0) // If there are other sundays
+    dataset.currentIndex = incrementWeek(dataset); // Try shifting up by a week
+  else window.alert("Invalid direction.");
+  // Replot if the index changed
+	if (dataset.currentIndex !== indexCopy) {
+		sessionStorage.setItem('currentIndex', dataset.currentIndex);
+		plotData(weekSet(dataset));
+	}
+}
+// Go forwards or backwards a month and plot it
+function monthCrement(dataset, direction) {
+  const indexCopy = dataset.currentIndex;
+  if (direction === "back"
+    && dataset.currentIndex !== 0 // If not on the first day
+    && dataset.premierIndices.length !== 0) // If there are other months
+    dataset.currentIndex = decrementMonth(dataset); // Try shifting down by a month
+  else if (direction === "forward"
+    && dataset.currentIndex !== dataset.dates.length - 1 // If not on the last day
+    && dataset.premierIndices.length !== 0) // If there are othe months
+    dataset.currentIndex = incrementMonth(dataset); // Try shifting up by a month
+  else window.alert("Invalid direction.");
+  // Replot if the index changed
+  if (dataset.currentIndex !== indexCopy) {
+    sessionStorage.setItem('currentIndex', dataset.currentIndex);
+    plotData(monthSet(dataset));
+  }
+}
+
+// Take the current index and return the index of the previous week
+function decrementWeek(dataset) {
+  let newPos = dataset.currentIndex;
+  if (newPos !== 0 && dataset.sundayIndices.length !== 0) {
+
+  }
+
+
+  return newPos;
 }
 /* --- Cycle through data --- */
 //Plot the previous week in the dataset
@@ -338,22 +369,16 @@ function incrementWeek(dataSet) {
 	// store the new starting position
 	let newStart = 0;
 	// if found, it will be >= 0. make sure its not the last one and increment
-	if (currentSundayIndex >= 0 && currentSundayIndex !== lastSundayIndex) {
+	if (currentSundayIndex >= 0 && currentSundayIndex !== lastSundayIndex)
 		newStart = dataSet.sundayIndices[currentSundayIndex + 1];
-	}
 	// if not found, and the current is after the last sunday, set it to the last sunday
-	else if (currentSundayIndex === -1 && dataSet.currentIndex > lastSundayIndex) {
+	else if (currentSundayIndex === -1 && dataSet.currentIndex > lastSundayIndex)
 		newStart = lastSundayIndex;
-	}
 	// if not found and is before the first sunday, set current to the first sunday
-	else if (currentSundayIndex === -1 && dataSet.currentIndex < firstSundayIndex) {
+	else if (currentSundayIndex === -1 && dataSet.currentIndex < firstSundayIndex)
 		newStart = firstSundayIndex;
-	}
 	// Otherwise go to the closest week
-	else {
-		newStart = findClosestIndex(dataSet.currentIndex, dataSet.sundayIndices);
-	}
-
+	else newStart = findClosestIndex(dataSet.currentIndex, dataSet.sundayIndices);
 	// Replot if the index changed
 	if (dataSet.currentIndex !== newStart) {
 		sessionStorage.setItem('currentIndex', newStart);

@@ -81,9 +81,9 @@ block content
                 h3.text-light.m-2 Controls
               // Time Increment/Decrement
               div.d-flex.flex-row.justify-content-center.align-items-center.mt-3
-                button#templeft(onclick="decrementTime()").btn.btn-lg.btn-secondary.mx-1
+                button#templeft(onclick="go('back')").btn.btn-lg.btn-secondary.mx-1
                   i.fas.fa-angle-left
-                button#tempright(onclick="incrementTime()").btn.btn-lg.btn-secondary.mx-1
+                button#tempright(onclick="go('forward')").btn.btn-lg.btn-secondary.mx-1
                   i.fas.fa-angle-right
               // Time Selectors
               div.d-flex.justify-content-center.align-items-center.mx-2.mt-3
