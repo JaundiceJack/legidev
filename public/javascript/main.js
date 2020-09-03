@@ -74,7 +74,7 @@ function enableChart() {
 async function plotCage(id) {
   let rawData = await getData(id);
   let dataset = parseData(rawData);
-  plotData(dataset);
+  plotData(weekSet(dataset));
   storeLocalData(dataset);
 }
 // Issue an ajax request to get readings for the reptile with the given ID
@@ -98,14 +98,14 @@ function parseData(rawData) {
   // Fill in missing dates and separate out the data categories
   let dataset = fullSet(parsedRaw);
   // Index the positions of the sundays and 1st of months found in the dataset
-  dataset.sundayIndices = getSundayIndices(dataset.dates);
-  dataset.premierIndices = getFirstsOfMonths(dataset.dates);
+  dataset.weekPos = getWeekPositions(dataset.dates);
+  dataset.monthPos = getMonthPositions(dataset.dates);
   // Set the timescale and where to start viewing the data
-  dataset.currentIndex = 0;
+  dataset.currentPos = 0;
   dataset.timeScale = 'week';
   // If weeks of data were found, start on the last week
-  if (dataset.sundayIndices && dataset.sundayIndices.length > 0)
-    dataset.currentIndex = dataset.sundayIndices[dataset.sundayIndices.length - 1];
+  if (dataset.weekPos && dataset.weekPos.length > 0)
+    dataset.currentPos = dataset.weekPos[dataset.weekPos.length - 1];
   return dataset;
 }
 
@@ -173,18 +173,24 @@ function emptySet(firstDate, lastDate) {
 /* Dataset Indexing */
 /* ---------------- */
 // Return a list of the sunday positions in the dataset
-function getSundayIndices(dates) {
-	let sundayIndices = [];
+function getWeekPositions(dates) {
+	let weekPos = [];
 	for (let i = 0; i < dates.length; i++)
-		if (dateFns.isSunday(dates[i])) sundayIndices.push(i);
-	return sundayIndices;
+		if (dateFns.isSunday(dates[i]))
+      weekPos.push(i);
+  // Include the first day of the previous week if it was not the first date
+  if (weekPos[0] !== 0) weekPos.unshift(0);
+	return weekPos;
 }
 // Obtain a list of the postions of first days of the month
-function getFirstsOfMonths(dates) {
-	let premierIndices = [];
+function getMonthPositions(dates) {
+	let monthPos = [];
 	for (let i = 0; i < dates.length; i++)
-		if (dateFns.isFirstDayOfMonth(dates[i])) premierIndices.push(i);
-	return premierIndices;
+		if (dateFns.isFirstDayOfMonth(dates[i]))
+      monthPos.push(i);
+  // Include the first day of the previous month if it was not the first date
+  if (monthPos[0] !== 0) monthPos.unshift(0);
+	return monthPos;
 }
 
 
@@ -204,13 +210,13 @@ function emptyWeekSet(date) {
 	}
 }
 // Obtain a subset of the data spanning a week from the starting index
-function weekSet(data, start) {
+function weekSet(data) {
 	// If the start is incremented past the data length, return nothing
-	if (start > data.dates.length-1) return;
+	if (data.currentPos > data.dates.length-1) return;
 	// Start a subset of the data to fill
-	let subset = emptyWeekSet(data.dates[start]);
+	let subset = emptyWeekSet(data.dates[data.currentPos]);
 	// Begin a counter at start
-	let index = start;
+	let index = data.currentPos;
 	// Loop over the data and add each datum to the subset
 	for (let i = 0; i < 7; i++) {
 		// Add data to the subset if the date has a corresponding datapoint
@@ -248,13 +254,13 @@ function emptyMonthSet(date) {
 	return emptySet;
 }
 // Obtain a subset of the data spanning a month from the starting index
-function monthSet(data, start) {
+function monthSet(data) {
 	// If the start is incremented past the data length, return nothing
-	if (start > data.dates.length-1) return;
+	if (data.currentPos > data.dates.length-1) return;
 	// Start a subset of the data to fill
-	let subset = emptyMonthSet(data.dates[start]);
+	let subset = emptyMonthSet(data.dates[data.currentPos]);
 	// Begin a counter at start
-	let index = start;
+	let index = data.currentPos;
 	// Loop over the data and add each datum to the subset
 	for (let i = 0; i < subset.dates.length; i++) {
 		// Add data to the subset if the date has a corresponding datapoint
@@ -276,6 +282,10 @@ function monthSet(data, start) {
 /* ---------------- */
 /* Button functions */
 /* ---------------- */
+// TODO: When I'm composing the list of sundays and premiers,
+// I should just put the first and last data points in with them
+// So when decremented and there's less than a full month,
+// it will take the chart to the first existing day of the previous
 // Display the next or previous chronological data
 function go(direction) {
   // Get the stored data or re-request it
@@ -284,212 +294,100 @@ function go(direction) {
   else if (dataset && dataset.timeScale === "month") monthCrement(dataset, direction);
   else window.alert("timeScale not set!");
 }
-// Go forwards or backwards a week and plot it
-function weekCrement(dataset, direction) {
-  const indexCopy = dataset.currentIndex;
-  if (direction === 'back')
-    dataset.currentIndex = decrementWeek(dataset); // Try shifting down by a week
-  else if (direction === 'forward'
-    && dataset.currentIndex !== dataset.dates.length - 1 // If not on the last day
-    && dataset.sundayIndices.length !== 0) // If there are other sundays
-    dataset.currentIndex = incrementWeek(dataset); // Try shifting up by a week
-  else window.alert("Invalid direction.");
-  // Replot if the index changed
-	if (dataset.currentIndex !== indexCopy) {
-		sessionStorage.setItem('currentIndex', dataset.currentIndex);
-		plotData(weekSet(dataset));
-	}
-}
-// Go forwards or backwards a month and plot it
-function monthCrement(dataset, direction) {
-  const indexCopy = dataset.currentIndex;
-  if (direction === "back"
-    && dataset.currentIndex !== 0 // If not on the first day
-    && dataset.premierIndices.length !== 0) // If there are other months
-    dataset.currentIndex = decrementMonth(dataset); // Try shifting down by a month
-  else if (direction === "forward"
-    && dataset.currentIndex !== dataset.dates.length - 1 // If not on the last day
-    && dataset.premierIndices.length !== 0) // If there are othe months
-    dataset.currentIndex = incrementMonth(dataset); // Try shifting up by a month
-  else window.alert("Invalid direction.");
-  // Replot if the index changed
-  if (dataset.currentIndex !== indexCopy) {
-    sessionStorage.setItem('currentIndex', dataset.currentIndex);
-    plotData(monthSet(dataset));
-  }
-}
-
-// Take the current index and return the index of the previous week
-function decrementWeek(dataset) {
-  let newPos = dataset.currentIndex;
-  if (newPos !== 0 && dataset.sundayIndices.length !== 0) {
-
-  }
-
-
-  return newPos;
-}
-/* --- Cycle through data --- */
-//Plot the previous week in the dataset
-function decrementWeek(dataset) {
-	// shorthand the first and last sunday position in the data
-	const lastSundayIndex = dataset.sundayIndices[dataset.sundayIndices.length - 1];
-	const firstSundayIndex = dataset.sundayIndices[0];
-	// check for the position of the current index in the sunday indices
-	const currentSundayIndex = dataset.sundayIndices.indexOf(dataset.currentIndex);
-	// store the new starting position
-	let newStart = 0;
-	// if the index was found and not the first, go to the previous one
-	if (currentSundayIndex > 0 && dataset.sundayIndices.length > 1)
-    newStart = dataset.sundayIndices[currentSundayIndex - 1];
-	// if not found, and the current is after the last sunday, set it to the last sunday
-	else if (currentSundayIndex === -1 && dataset.currentIndex > lastSundayIndex)
-    newStart = lastSundayIndex;
-	// if not found and is before the first sunday, set current to 0
-	else if (currentSundayIndex === -1 && dataset.currentIndex < firstSundayIndex)
-    newStart = 0;
-	// Otherwise go to the closest week
-	else
-    newStart = findClosestIndex(dataset.currentIndex, dataset.sundayIndices);
-	// Replot if the index Changed
-	if (dataset.currentIndex !== newStart) {
-		sessionStorage.setItem('currentIndex', newStart);
-		plotData(weekSet(dataset, newStart));
-	}
-}
-// Plot the next week in the dataset
-function incrementWeek(dataSet) {
-	// shorthand the first and last sunday positions in the data
-	const lastSundayIndex = dataSet.sundayIndices[dataSet.sundayIndices.length - 1];
-	const firstSundayIndex = dataSet.sundayIndices[0];
-	// if on the last sunday, do nothing
-	if (dataSet.currentIndex === lastSundayIndex) return;
-	// look for the current index in the list of sundays
-	const currentSundayIndex = dataSet.sundayIndices.indexOf(dataSet.currentIndex);
-	// store the new starting position
-	let newStart = 0;
-	// if found, it will be >= 0. make sure its not the last one and increment
-	if (currentSundayIndex >= 0 && currentSundayIndex !== lastSundayIndex)
-		newStart = dataSet.sundayIndices[currentSundayIndex + 1];
-	// if not found, and the current is after the last sunday, set it to the last sunday
-	else if (currentSundayIndex === -1 && dataSet.currentIndex > lastSundayIndex)
-		newStart = lastSundayIndex;
-	// if not found and is before the first sunday, set current to the first sunday
-	else if (currentSundayIndex === -1 && dataSet.currentIndex < firstSundayIndex)
-		newStart = firstSundayIndex;
-	// Otherwise go to the closest week
-	else newStart = findClosestIndex(dataSet.currentIndex, dataSet.sundayIndices);
-	// Replot if the index changed
-	if (dataSet.currentIndex !== newStart) {
-		sessionStorage.setItem('currentIndex', newStart);
-		plotData(weekSet(dataSet, newStart));
-	}
-}
-// Plot the previous month in the dataset
-function decrementMonth(dataSet) {
-	if (dataSet.currentIndex === 0) return;
-	if (!dataSet.premierIndices) return;
-	else {
-		// shorthand the first and last premier positions in the data
-		const lastPremierIndex = dataSet.premierIndices[dataSet.premierIndices.length - 1];
-		const firstPremierIndex = dataSet.premierIndices[0];
-		// check for the position of the current index in the premier indices
-		const currentPremierIndex = dataSet.premierIndices.indexOf(dataSet.currentIndex);
-		// store the new starting position
-		let newStart = 0;
-		// if the index was found and not the first, go to the previous one
-		if (currentPremierIndex > 0 && dataSet.premierIndices.length > 1) {
-			newStart = dataSet.premierIndices[currentPremierIndex - 1];
-		}
-		// if not found, and the current is after the last premier, set it to the last premier
-		else if (currentPremierIndex === -1 && dataSet.currentIndex > lastPremierIndex) {
-			newStart = lastPremierIndex;
-		}
-		// if not found and is before the first premier, set current to 0
-		else if (currentPremierIndex === -1 && dataSet.currentIndex < firstPremierIndex) {
-			newStart = 0;
-		}
-		// Otherwise go to the closest week
-		else {
-			newStart = findClosestIndex(dataSet.currentIndex, dataSet.premierIndices);
-		}
-
-		// Replot if the index Changed
-		if (dataSet.currentIndex !== newStart) {
-			sessionStorage.setItem('currentIndex', newStart);
-			plotData(monthSet(dataSet, newStart))
-		}
-	}
-}
-// Plot the next month in the dataset
-function incrementMonth(dataSet) {
-	// If on the last day do nothing
-	if (dataSet.currentIndex === dataSet.dates.length - 1) return;
-	// If there are no indexed premiers, the data does not span a week
-	else if (!dataSet.premierIndices) return;
-	// If there are premiers, check for the next one and go to it
-	else {
-		// shorthand the first and last premier positions in the data
-		const lastPremierIndex = dataSet.premierIndices[dataSet.premierIndices.length - 1];
-		const firstPremierIndex = dataSet.premierIndices[0];
-		// if on the last premier, do nothing
-		if (dataSet.currentIndex === lastPremierIndex) return;
-		// look for the current index in the list of premiers
-		const currentPremierIndex = dataSet.premierIndices.indexOf(dataSet.currentIndex);
-		// store the new starting position
-		let newStart = 0;
-		// if found, it will be >= 0. make sure its not the last one and increment
-		if (currentPremierIndex >= 0 && currentPremierIndex !== lastPremierIndex) {
-			newStart = dataSet.premierIndices[currentPremierIndex + 1];
-		}
-		// if not found, and the current is after the last premier, set it to the last premier
-		else if (currentPremierIndex === -1 && dataSet.currentIndex > lastPremierIndex) {
-			newStart = lastPremierIndex;
-		}
-		// if not found and is before the first premier, set current to the first premier
-		else if (currentPremierIndex === -1 && dataSet.currentIndex < firstPremierIndex) {
-			newStart = firstPremierIndex;
-		}
-		// Otherwise go to the closest week
-		else {
-			newStart = findClosestIndex(dataSet.currentIndex, dataSet.premierIndices);
-		}
-
-		// Replot if the index changed
-		if (dataSet.currentIndex !== newStart) {
-			sessionStorage.setItem('currentIndex', newStart);
-			plotData(monthSet(dataSet, newStart));
-		}
-	}
-}
-
-
-
-
 // Clickng the week view shows 7 day increments
 function setWeekView() {
 	// Get the stored data or re-request it
-	let data = retreiveLocalData();
+	let data = retrieveLocalData();
   if (data && data.timeScale === "month") {
 		data.timeScale = "week";
 		sessionStorage.setItem('timeScale', "week");
-		let set = weekSet(data, data.currentIndex);
+		let set = weekSet(data, data.currentPos);
 		if (set) plotData(set);
 	}
 }
 // Clicking the month view shows 28-31 day increments
 function setMonthView() {
 	// Get the stored data or re-request it
-	let data = retreiveLocalData();
+	let data = retrieveLocalData();
 	if (data && data.timeScale === "week") {
 		data.timeScale = "month";
 		sessionStorage.setItem('timeScale', "month");
-		console.log("time scale changed to ", data.timeScale);
-		let set = monthSet(data, data.currentIndex);
+		let set = monthSet(data, data.currentPos);
 		if (set) plotData(set);
 	}
 }
+// Go forwards or backwards a week and plot it
+function weekCrement(dataset, direction) {
+  const indexCopy = dataset.currentPos;
+  if (direction === 'back')
+    dataset.currentPos = decrementWeek(dataset);
+  else if (direction === 'forward')
+    dataset.currentPos = incrementWeek(dataset);
+  else window.alert("Invalid direction.");
+  // Replot if the index changed
+	if (dataset.currentPos !== indexCopy) {
+		sessionStorage.setItem('currentPos', dataset.currentPos);
+		plotData(weekSet(dataset));
+	}
+}
+// Go forwards or backwards a month and plot it
+function monthCrement(dataset, direction) {
+  const indexCopy = dataset.currentPos;
+  if (direction === "back")
+    dataset.currentPos = decrementMonth(dataset);
+  else if (direction === "forward")
+    dataset.currentPos = incrementMonth(dataset);
+  else window.alert("Invalid direction.");
 
+  console.log("Before: ", indexCopy, " After: ", dataset.currentPos);
+  console.log("Premiers: ", dataset.monthPos);
+
+  // Replot if the index changed
+  if (dataset.currentPos !== indexCopy) {
+    sessionStorage.setItem('currentPos', dataset.currentPos);
+    plotData(monthSet(dataset));
+  }
+}
+// Take the current index and return the index of the previous/next week/month
+function decrementWeek(dataset) {
+  let newPos = dataset.currentPos;
+  if (dataset.currentPos !== 0 && dataset.weekPos.length !== 0) {
+    const closestWeekPos = findClosestIndex(dataset.currentPos, dataset.weekPos);
+    // If the closest isn't the first, and there are more than 1 week positions
+    if (closestWeekPos !== 0 && dataset.weekPos.length > 1) {
+      newPos = dataset.weekPos[closestWeekPos-1];
+    }
+  }
+  return newPos;
+}
+function incrementWeek(dataset) {
+  let newPos = dataset.currentPos;
+  if (newPos !== dataset.dates.length-1 && dataset.weekPos.length !== 0) {
+    const closestWeekPos = findClosestIndex(dataset.currentPos, dataset.weekPos);
+    // If the closest isn't the last, and there are more than 1 week positions
+    if (closestWeekPos !== dataset.weekPos.length-1 && dataset.weekPos.length > 1)
+      newPos = dataset.weekPos[closestWeekPos+1];
+  }
+  return newPos;
+}
+function decrementMonth(dataset) {
+  let newPos = dataset.currentPos;
+  if (dataset.currentPos !== 0 && dataset.monthPos.length !== 0) {
+    const closestMonthPos = findClosestIndex(dataset.currentPos, dataset.monthPos);
+    if (closestMonthPos !== 0 && dataset.monthPos.length > 1)
+      newPos = dataset.monthPos[closestMonthPos-1];
+  }
+  return newPos;
+}
+function incrementMonth(dataset) {
+  let newPos = dataset.currentPos;
+  if (dataset.currentPos !== dataset.dates.length-1 && dataset.monthPos.length !== 0) {
+    const closestMonthPos = findClosestIndex(dataset.currentPos, dataset.monthPos);
+    if (closestMonthPos !== dataset.monthPos.length-1 && dataset.monthPos.length > 1)
+      newPos = dataset.monthPos[closestMonthPos+1];
+  }
+  return newPos;
+}
 
 
 /* ------------------------- */
@@ -497,37 +395,35 @@ function setMonthView() {
 /* ------------------------- */
 // Get the data stored in sessionStorage or re-request it
 function retrieveLocalData() {
-	let data;
+	let dataset = null;
 	if (typeof(Storage) !== "undefined") {
-		data = {
-			dates: JSON.parse(sessionStorage.getItem('dates')),
-			coldest: JSON.parse(sessionStorage.getItem('coldest')),
-			warmest: JSON.parse(sessionStorage.getItem('warmest')),
-			humidity: JSON.parse(sessionStorage.getItem('humidity')),
-      hygiene: JSON.parse(sessionStorage.getItem('hygiene')),
-			sundayIndices: JSON.parse(sessionStorage.getItem('sundayIndices')),
-			premierIndices: JSON.parse(sessionStorage.getItem('premierIndices')),
-			currentIndex: parseInt(sessionStorage.getItem('currentIndex')),
-			timeScale: sessionStorage.getItem('timeScale')
+		dataset = {
+			dates:      JSON.parse(sessionStorage.getItem('dates')),
+			coldest:    JSON.parse(sessionStorage.getItem('coldest')),
+			warmest:    JSON.parse(sessionStorage.getItem('warmest')),
+			humidity:   JSON.parse(sessionStorage.getItem('humidity')),
+      hygiene:    JSON.parse(sessionStorage.getItem('hygiene')),
+			weekPos:    JSON.parse(sessionStorage.getItem('weekPos')),
+			monthPos:   JSON.parse(sessionStorage.getItem('monthPos')),
+			currentPos: parseInt(sessionStorage.getItem('currentPos')),
+			timeScale:  sessionStorage.getItem('timeScale')
 		}
 	}
-  //TODO: if sessionStorage is disabled, re-request the dataset
-	else data = null;
-	return data;
+	return dataset;
 }
 // Store changes to the local data
-function storeLocalData(dataSet) {
+function storeLocalData(dataset) {
 	// Store the data in the session to scroll through graph data
 	if (typeof(Storage) !== "undefined") {
-		sessionStorage.setItem('dates',          JSON.stringify(dataSet.dates));
-		sessionStorage.setItem('coldest',        JSON.stringify(dataSet.coldest));
-		sessionStorage.setItem('warmest',        JSON.stringify(dataSet.warmest));
-		sessionStorage.setItem('humidity',       JSON.stringify(dataSet.humidity));
-    sessionStorage.setItem('hygiene',        JSON.stringify(dataSet.hygiene));
-		sessionStorage.setItem('sundayIndices',  JSON.stringify(dataSet.sundayIndices));
-		sessionStorage.setItem('premierIndices', JSON.stringify(dataSet.premierIndices));
-		sessionStorage.setItem('currentIndex',   dataSet.currentIndex.toString());
-		sessionStorage.setItem('timeScale',      dataSet.timeScale);
+		sessionStorage.setItem('dates',      JSON.stringify(dataset.dates));
+		sessionStorage.setItem('coldest',    JSON.stringify(dataset.coldest));
+		sessionStorage.setItem('warmest',    JSON.stringify(dataset.warmest));
+		sessionStorage.setItem('humidity',   JSON.stringify(dataset.humidity));
+    sessionStorage.setItem('hygiene',    JSON.stringify(dataset.hygiene));
+		sessionStorage.setItem('weekPos',    JSON.stringify(dataset.weekPos));
+		sessionStorage.setItem('monthPos',   JSON.stringify(dataset.monthPos));
+		sessionStorage.setItem('currentPos', dataset.currentPos.toString());
+		sessionStorage.setItem('timeScale',  dataset.timeScale);
 	}
 	else console.log("Please enable sessionStorage for on your browser.");
 
@@ -541,11 +437,16 @@ function storeLocalData(dataSet) {
 function plotData(data) {
   let chart = document.getElementById("cageChart");
 	if (data && data.dates.length > 0) {
-		plotReadings(chart, data.dates, data.cools, data.warms, data.humids);
+		plotReadings(chart, data);
 	}
 }
+function replot() {
+  let dataset = retrieveLocalData();
+  let chart = document.getElementById("cageChart");
+  plotReadings(chart, dataset);
+}
 // Plot the cool, warm, and humidity datapoints on the temperature graph
-function plotReadings(chart, dates, cools, warms, humids) {
+function plotReadings(chart, data) {
 	if (chart) {
 		// Check for previous chart instances and delete them
 		if (window.chart) {	window.chart.destroy();	}
@@ -554,8 +455,8 @@ function plotReadings(chart, dates, cools, warms, humids) {
 		let plot = new Chart(chart, {
 			type: 'line',
 			data: {
-				labels: dateset(dates),
-				datasets: [coolset(cools), warmset(warms), humidset(humids)]
+				labels: dateset(data.dates),
+				datasets: packData(data)
 			},
 			options: {
 				scales: {
@@ -585,6 +486,22 @@ function dateset(dates) {
 		labels.push(dateLabel);
 	}
 	return labels;
+}
+// Package the enabled data types to display
+function packData(data) {
+  // Grab the checkbox elements
+  var cbs = {
+    cold: document.getElementById('coldCheck'),
+    warm: document.getElementById('warmCheck'),
+    humid: document.getElementById('humidCheck'),
+    hygiene: document.getElementById('hygieneCheck')
+  }
+  var sets = [];
+  if (cbs.cold.checked) sets.push(coolset(data.coldest));
+  if (cbs.warm.checked) sets.push(warmset(data.warmest));
+  if (cbs.humid.checked) sets.push(humidset(data.humidity));
+  if (cbs.hygiene.checked) sets.push(hygieneset(data.hygiene));
+  return sets;
 }
 // Package the cool readings into a graphable dataset
 function coolset(cools) {
@@ -619,6 +536,17 @@ function humidset(humids) {
 	}
 	return humiSet;
 }
+// Package the hygiene readings into a graphable dataset
+function hygieneset(hygienes) {
+  const hygSet = {
+		label: "Hygiene",
+		data: hygienes,
+		//backgroundColor: ['#EEEEEE'],
+		borderColor: ['#7FDBFF'],
+		borderWidth: 2
+	}
+	return hygSet;
+}
 
 
 /* --------------------- */
@@ -634,3 +562,147 @@ function findClosestIndex(number, array) {
 		return comparison;
 	}
 }
+
+
+
+
+
+
+
+
+
+/* --- Graveyard --- */
+/*
+//Plot the previous week in the dataset
+function decrementWeek(dataset) {
+	// shorthand the first and last sunday position in the data
+	const lastSundayIndex = dataset.weekPos[dataset.weekPos.length - 1];
+	const firstSundayIndex = dataset.weekPos[0];
+	// check for the position of the current index in the sunday indices
+	const currentSundayIndex = dataset.weekPos.indexOf(dataset.currentPos);
+	// store the new starting position
+	let newStart = 0;
+	// if the index was found and not the first, go to the previous one
+	if (currentSundayIndex > 0 && dataset.weekPos.length > 1)
+    newStart = dataset.weekPos[currentSundayIndex - 1];
+	// if not found, and the current is after the last sunday, set it to the last sunday
+	else if (currentSundayIndex === -1 && dataset.currentPos > lastSundayIndex)
+    newStart = lastSundayIndex;
+	// if not found and is before the first sunday, set current to 0
+	else if (currentSundayIndex === -1 && dataset.currentPos < firstSundayIndex)
+    newStart = 0;
+	// Otherwise go to the closest week
+	else
+    newStart = findClosestIndex(dataset.currentPos, dataset.weekPos);
+	// Replot if the index Changed
+	if (dataset.currentPos !== newStart) {
+		sessionStorage.setItem('currentPos', newStart);
+		plotData(weekSet(dataset, newStart));
+	}
+}
+// Plot the next week in the dataset
+function incrementWeek(dataSet) {
+	// shorthand the first and last sunday positions in the data
+	const lastSundayIndex = dataSet.weekPos[dataSet.weekPos.length - 1];
+	const firstSundayIndex = dataSet.weekPos[0];
+	// if on the last sunday, do nothing
+	if (dataSet.currentPos === lastSundayIndex) return;
+	// look for the current index in the list of sundays
+	const currentSundayIndex = dataSet.weekPos.indexOf(dataSet.currentPos);
+	// store the new starting position
+	let newStart = 0;
+	// if found, it will be >= 0. make sure its not the last one and increment
+	if (currentSundayIndex >= 0 && currentSundayIndex !== lastSundayIndex)
+		newStart = dataSet.weekPos[currentSundayIndex + 1];
+	// if not found, and the current is after the last sunday, set it to the last sunday
+	else if (currentSundayIndex === -1 && dataSet.currentPos > lastSundayIndex)
+		newStart = lastSundayIndex;
+	// if not found and is before the first sunday, set current to the first sunday
+	else if (currentSundayIndex === -1 && dataSet.currentPos < firstSundayIndex)
+		newStart = firstSundayIndex;
+	// Otherwise go to the closest week
+	else newStart = findClosestIndex(dataSet.currentPos, dataSet.weekPos);
+	// Replot if the index changed
+	if (dataSet.currentPos !== newStart) {
+		sessionStorage.setItem('currentPos', newStart);
+		plotData(weekSet(dataSet, newStart));
+	}
+}
+// Plot the previous month in the dataset
+function decrementMonth(dataSet) {
+	if (dataSet.currentPos === 0) return;
+	if (!dataSet.monthPos) return;
+	else {
+		// shorthand the first and last premier positions in the data
+		const lastPremierIndex = dataSet.monthPos[dataSet.monthPos.length - 1];
+		const firstPremierIndex = dataSet.monthPos[0];
+		// check for the position of the current index in the premier indices
+		const currentPremierIndex = dataSet.monthPos.indexOf(dataSet.currentPos);
+		// store the new starting position
+		let newStart = 0;
+		// if the index was found and not the first, go to the previous one
+		if (currentPremierIndex > 0 && dataSet.monthPos.length > 1) {
+			newStart = dataSet.monthPos[currentPremierIndex - 1];
+		}
+		// if not found, and the current is after the last premier, set it to the last premier
+		else if (currentPremierIndex === -1 && dataSet.currentPos > lastPremierIndex) {
+			newStart = lastPremierIndex;
+		}
+		// if not found and is before the first premier, set current to 0
+		else if (currentPremierIndex === -1 && dataSet.currentPos < firstPremierIndex) {
+			newStart = 0;
+		}
+		// Otherwise go to the closest week
+		else {
+			newStart = findClosestIndex(dataSet.currentPos, dataSet.monthPos);
+		}
+
+		// Replot if the index Changed
+		if (dataSet.currentPos !== newStart) {
+			sessionStorage.setItem('currentPos', newStart);
+			plotData(monthSet(dataSet, newStart))
+		}
+	}
+}
+// Plot the next month in the dataset
+function incrementMonth(dataSet) {
+	// If on the last day do nothing
+	if (dataSet.currentPos === dataSet.dates.length - 1) return;
+	// If there are no indexed premiers, the data does not span a week
+	else if (!dataSet.monthPos) return;
+	// If there are premiers, check for the next one and go to it
+	else {
+		// shorthand the first and last premier positions in the data
+		const lastPremierIndex = dataSet.monthPos[dataSet.monthPos.length - 1];
+		const firstPremierIndex = dataSet.monthPos[0];
+		// if on the last premier, do nothing
+		if (dataSet.currentPos === lastPremierIndex) return;
+		// look for the current index in the list of premiers
+		const currentPremierIndex = dataSet.monthPos.indexOf(dataSet.currentPos);
+		// store the new starting position
+		let newStart = 0;
+		// if found, it will be >= 0. make sure its not the last one and increment
+		if (currentPremierIndex >= 0 && currentPremierIndex !== lastPremierIndex) {
+			newStart = dataSet.monthPos[currentPremierIndex + 1];
+		}
+		// if not found, and the current is after the last premier, set it to the last premier
+		else if (currentPremierIndex === -1 && dataSet.currentPos > lastPremierIndex) {
+			newStart = lastPremierIndex;
+		}
+		// if not found and is before the first premier, set current to the first premier
+		else if (currentPremierIndex === -1 && dataSet.currentPos < firstPremierIndex) {
+			newStart = firstPremierIndex;
+		}
+		// Otherwise go to the closest week
+		else {
+			newStart = findClosestIndex(dataSet.currentPos, dataSet.monthPos);
+		}
+
+		// Replot if the index changed
+		if (dataSet.currentPos !== newStart) {
+			sessionStorage.setItem('currentPos', newStart);
+			plotData(monthSet(dataSet, newStart));
+		}
+	}
+}
+*/
