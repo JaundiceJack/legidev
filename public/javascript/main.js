@@ -301,7 +301,7 @@ function setWeekView() {
   if (data && data.timeScale === "month") {
 		data.timeScale = "week";
 		sessionStorage.setItem('timeScale', "week");
-		let set = weekSet(data, data.currentPos);
+		let set = weekSet(data);
 		if (set) plotData(set);
 	}
 }
@@ -312,7 +312,7 @@ function setMonthView() {
 	if (data && data.timeScale === "week") {
 		data.timeScale = "month";
 		sessionStorage.setItem('timeScale', "month");
-		let set = monthSet(data, data.currentPos);
+		let set = monthSet(data);
 		if (set) plotData(set);
 	}
 }
