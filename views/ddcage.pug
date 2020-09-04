@@ -99,16 +99,16 @@ block content
                 .btn-group-vertical.w-100
                   label.btn.btn-secondary.m-0
                     i.far.fa-snowflake.mr-2
-                    input(id="coldCheck" name="coldCheck" type="checkbox" checked).ml-2
+                    input(id="coldCheck" name="coldCheck" type="checkbox" onchange='replot()' checked).ml-2
                   label.btn.btn-secondary.m-0
                     i.fab.fa-gripfire.mr-2
-                    input(id="warmCheck" name="warmCheck" type="checkbox" checked).ml-2
+                    input(id="warmCheck" name="warmCheck" type="checkbox" onchange='replot()' checked).ml-2
                   label.btn.btn-secondary.m-0
                     i.fas.fa-cloud.mr-2
-                    input(id="humidCheck" name="humidCheck" type="checkbox" checked).ml-2  
+                    input(id="humidCheck" name="humidCheck" type="checkbox" onchange='replot()' checked).ml-2  
                   label.btn.btn-secondary.m-0
                     i.fas.fa-trash-alt.mr-2
-                    input(id="hygieneCheck" name="hygieneCheck" type="checkbox" checked).ml-2                
+                    input(id="hygieneCheck" name="hygieneCheck" type="checkbox" onchange='replot()' checked).ml-2                
             div.readings.w-100
               canvas(data-id=selected._id)#cageChart.chart.h-100.w-100
               

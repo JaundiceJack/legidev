@@ -113,8 +113,8 @@ router.get('/', ensureAuthenticated, async (req, res) => {
 router.get('/:reptile_id', ensureAuthenticated, async (req, res) => {
 	const reptiles = await Reptile.find({owner_id: req.user._id}).exec();
 	// If the user had no reptiles, create one, otherwise render their page
-	if (!reptiles) { createRedir(req, res); }
-	else { renderReptile(req, res, reptiles); }
+	if (reptiles) renderReptile(req, res, reptiles);
+	else createRedir(req, res); 
 })
 
 
